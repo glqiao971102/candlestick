@@ -205,7 +205,7 @@ function Chart2() {
 
 
 
-      <div className="donut" style={{ padding: '0px 40px' }}>
+      <div className="donut" style={{ padding: '0px 200px 0px 40px' }}>
         <div style={{ textAlign: 'center' }}>
           {/* <h3 style={{ color: timer <= 3 ? 'red' : '' }}>{timer}</h3> */}
 
