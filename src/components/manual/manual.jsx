@@ -179,7 +179,7 @@ function Chart2() {
     // component re-renders
     const intervalId = setInterval(() => {
       setTimer(timer - 1)
-    }, 500)
+    }, 1500)
 
     // clear interval on re-render to avoid memory leaks
     return () => clearInterval(intervalId)
