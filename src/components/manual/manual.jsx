@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col,Button } from 'reactstrap'
+import { Row, Col, Button } from 'reactstrap'
 import ReactApexChart from 'react-apexcharts'
 
 
@@ -135,26 +135,77 @@ function Chart2() {
   //   // when we update it
   // }, [timer])
 
+  // let [index, setIndex] = useState(0)
+  let [startGame, setStartGame] = useState(false)
+  let [isBusy, setIsBusy] = useState(false)
+  let [counter, setCounter] = useState(0)
 
+  useEffect(() => {
+    // exit early when we reach 0
+    // if (!timer) return
 
-  const updateData = () => {
+    if (!timer && startGame && counter < 5 && gameChart[index] != null) {
 
-    let sliceDate = gameChart.slice(firstIndex, secondIndex)
+      setTimer(1)
 
-    console.log('sliceDate', sliceDate)
+      setData({
+        ...data, series: [{
+          data: [...data.series[0].data,
+          gameChart[index]]
+        }]
+      })
+      setIndex(index + 1)
 
-    setData({
-      ...data, series: [{
-        data: [...data.series[0].data.concat(sliceDate)
-        ]
-      }]
-    })
-    setFirstIndex(firstIndex + 5)
-    setSecondIndex(secondIndex + 5)
-    if (sliceDate.length <= 0) {
-      alert('Chart End')
+      setCounter(counter + 1)
+
+      if (counter === 5) {
+        setStartGame(false)
+      }
+
+      console.log(counter)
+    } else if (counter >= 5) {
+
+      setCounter(0)
+
+      if (counter === 5) {
+        setStartGame(false)
+      }
+
     }
-  }
+
+
+
+    // save intervalId to clear the interval when the
+    // component re-renders
+    const intervalId = setInterval(() => {
+      setTimer(timer - 1)
+    }, 500)
+
+    // clear interval on re-render to avoid memory leaks
+    return () => clearInterval(intervalId)
+    // add timeLeft as a dependency to re-rerun the effect
+    // when we update it
+  }, [timer, startGame])
+
+
+  // const updateData = () => {
+
+  //   let sliceDate = gameChart.slice(firstIndex, secondIndex)
+
+  //   console.log('sliceDate', sliceDate)
+
+  //   setData({
+  //     ...data, series: [{
+  //       data: [...data.series[0].data.concat(sliceDate)
+  //       ]
+  //     }]
+  //   })
+  //   setFirstIndex(firstIndex + 5)
+  //   setSecondIndex(secondIndex + 5)
+  //   if (sliceDate.length <= 0) {
+  //     alert('Chart End')
+  //   }
+  // }
 
 
   const [data, setData] = useState({
@@ -219,7 +270,15 @@ function Chart2() {
             <h2>{data?.series[0]?.data[data?.series[0]?.data?.length - 1]?.y[0]}</h2>
           </Col>
           <Col>
-            <Button size="lg" color='success' onClick={() => { updateData() }}>Update</Button>
+            <Button disabled={counter != 0} size="lg" color='success' onClick={() => {
+
+              setIsBusy(true)
+              setStartGame(!startGame)
+              setTimer(1)
+              // setCounter(5)
+              // 
+              // updateData()
+            }}>Update</Button>
           </Col>
         </Row>
 

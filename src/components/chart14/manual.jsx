@@ -103,6 +103,78 @@ function Chart2() {
 
   const [timer, setTimer] = useState(1)
 
+  // let [index, setIndex] = useState(0)
+  let [startGame, setStartGame] = useState(false)
+  let [isBusy, setIsBusy] = useState(false)
+  let [counter, setCounter] = useState(0)
+
+  useEffect(() => {
+    // exit early when we reach 0
+    // if (!timer) return
+
+    if (!timer && startGame && counter < 5 && gameChart[index] != null) {
+
+      setTimer(1)
+
+      setData({
+        ...data, series: [{
+          data: [...data.series[0].data,
+          gameChart[index]]
+        }]
+      })
+      setIndex(index + 1)
+
+      setCounter(counter + 1)
+
+      if (counter === 5) {
+        setStartGame(false)
+      }
+
+      console.log(counter)
+    } else if (counter >= 5) {
+
+      setCounter(0)
+
+      if (counter === 5) {
+        setStartGame(false)
+      }
+
+    }
+
+
+
+    // save intervalId to clear the interval when the
+    // component re-renders
+    const intervalId = setInterval(() => {
+      setTimer(timer - 1)
+    }, 500)
+
+    // clear interval on re-render to avoid memory leaks
+    return () => clearInterval(intervalId)
+    // add timeLeft as a dependency to re-rerun the effect
+    // when we update it
+  }, [timer, startGame])
+
+
+  // const updateData = () => {
+
+  //   let sliceDate = gameChart.slice(firstIndex, secondIndex)
+
+  //   console.log('sliceDate', sliceDate)
+
+  //   setData({
+  //     ...data, series: [{
+  //       data: [...data.series[0].data.concat(sliceDate)
+  //       ]
+  //     }]
+  //   })
+  //   setFirstIndex(firstIndex + 5)
+  //   setSecondIndex(secondIndex + 5)
+  //   if (sliceDate.length <= 0) {
+  //     alert('Chart End')
+  //   }
+  // }
+
 
 
   // useEffect(() => {
@@ -201,36 +273,44 @@ function Chart2() {
 
   return (
     <>
-      
+
 
 
 
       <div className="donut" style={{ padding: '0px 200px 0px 40px' }}>
-              <div style={{ textAlign: 'center' }}>
-                {/* <h3 style={{ color: timer <= 3 ? 'red' : '' }}>{timer}</h3> */}
+        <div style={{ textAlign: 'center' }}>
+          {/* <h3 style={{ color: timer <= 3 ? 'red' : '' }}>{timer}</h3> */}
 
-                {/* <button onClick={() => { previousData() }}>Previous</button> */}
-              </div>
+          {/* <button onClick={() => { previousData() }}>Previous</button> */}
+        </div>
 
-              <Row style={{ marginTop:'20px',justifyContent:'center', alignItems:'center',textAlign:'center' }}>
-                <Col>
-                  <h5>Current Price</h5>
-                  {/* {console.log('data54321', data)} */}
-                  <h2>{data?.series[0]?.data[data?.series[0]?.data?.length - 1]?.y[0]}</h2>
-                </Col>
-                <Col>
-                  <Button size="lg" color='success' onClick={() => { updateData() }}>Update</Button>
-                </Col>
-              </Row>
+        <Row style={{ marginTop: '20px', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+          <Col>
+            <h5>Current Price</h5>
+            {/* {console.log('data54321', data)} */}
+            <h2>{data?.series[0]?.data[data?.series[0]?.data?.length - 1]?.y[0]}</h2>
+          </Col>
+          <Col>
+            <Button disabled={counter != 0} size="lg" color='success' onClick={() => {
 
-              <ReactApexChart options={data?.options} series={data?.series} type="candlestick" height={650} />
+              setIsBusy(true)
+              setStartGame(!startGame)
+              setTimer(1)
+              // setCounter(5)
+              // 
+              // updateData()
+            }}>Update</Button>
+          </Col>
+        </Row>
+
+        <ReactApexChart options={data?.options} series={data?.series} type="candlestick" height={650} />
 
 
 
-              
 
-            </div>
-         
+
+      </div>
+
     </>
   );
 }
